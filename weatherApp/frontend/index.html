@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f0f0f0; }
+        .container { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input, button { padding: 10px; width: 100%; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; }
+        .result { margin-top: 20px; padding: 10px; background-color: #e0f7fa; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Weather App</h2>
+        <input type="text" id="cityInput" placeholder="Enter city name">
+        <button onclick="getWeather()">Get Weather</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        async function getWeather() {
+            const city = document.getElementById('cityInput').value.trim();
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = "Loading...";
+
+            if (!city) {
+                resultDiv.innerHTML = "Please enter a city name.";
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:9090/api/weather?city=${encodeURIComponent(city)}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    resultDiv.innerHTML = `Error: ${data.error}`;
+                } else {
+                    resultDiv.innerHTML = `
+                        <strong>City:</strong> ${data.city} <br>
+                        <strong>Temperature:</strong> ${data.temp} °C <br>
+                        <strong>Description:</strong> ${data.description}
+                    `;
+                }
+            } catch (err) {
+                resultDiv.innerHTML = "Failed to fetch weather. Is the backend running?";
+                console.error(err);
+            }
+        }
+    </script>
+</body>
+</html>
